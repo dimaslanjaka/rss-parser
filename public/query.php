@@ -10,7 +10,8 @@ if (!isreq('q')) {
 }
 $agc = new gtrans();
 $curl = $agc->cURL();
-$proxyF = _file_(__DIR__ . '/proxy.txt');
+$proxyFC = __DIR__ . '/proxy.txt';
+$proxyF = _file_($proxyFC);
 $proxies = file($proxyF, FILE_SKIP_EMPTY_LINES);
 $proxies = array_map('trim', $proxies);
 $res = [];
@@ -25,7 +26,7 @@ if (!empty($proxies)) {
     $res['code'] = $curl->errorCode;
     $res['message'] = $curl->errorMessage;
     $res['proxy'] = $curl->getOpt(CURLOPT_PROXY);
-    //_file_($proxyF, str_replace(file_get_contents($proxyF)))
+    _file_($proxyFC, str_replace($res['proxy'], '', file_get_contents($proxyFC)), true);
   } else {
     $html = str_get_html($curl->response);
     $res['title'] = $html->find('title', 0)->innertext;
@@ -49,7 +50,7 @@ if (!empty($proxies)) {
   $res['message'] = 'proxy_empty';
 }
 ksort($res);
-json::h();
+json::h(1);
 echo CJSON($res);
 
 function randP()

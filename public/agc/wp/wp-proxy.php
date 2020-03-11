@@ -129,10 +129,11 @@ class Proxy
       return null;
     }
     $proxy = explode("\n", file_get_contents($this->src));
-    $fh = fopen($this->out, 'w');
+    $fh = fopen($this->out, 'a+');
     $proxy = array_unique($proxy);
     $proxy = array_filter($proxy);
     for ($i = 0; $i < count($proxy) - 1; ++$i) {
+      $this->cpu();
       if (!empty($proxy[$i]) && preg_match($this->regex_ip_port, $proxy[$i], $match)) {
         $splited = explode(':', $match[0]);
         echo $match[0];
@@ -173,5 +174,25 @@ class Proxy
     }
 
     return $c;
+  }
+
+  function cpu()
+  {
+    if (!function_exists('sys_getloadavg')) {
+      function sys_getloadavg()
+      {
+        $loadavg_file = '/proc/loadavg';
+        if (file_exists($loadavg_file)) {
+          return explode(chr(32), file_get_contents($loadavg_file));
+        }
+
+        return [0, 0, 0];
+      }
+    }
+    $load = sys_getloadavg();
+    $limit = 50; //percent cpu
+    if ($load[0] >= $limit) {
+      die('Oops Server Busy, this message was automate from Dimas Lanjaka For telling users, there too many processed.');
+    }
   }
 }

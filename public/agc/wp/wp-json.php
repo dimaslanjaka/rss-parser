@@ -7,9 +7,9 @@ class json
     return new self();
   }
 
-  public static function h()
+  public static function h($break = null)
   {
-    if (ob_get_level()) {
+    if (ob_get_level() && $break) {
       ob_end_clean();
     }
     if (!headers_sent()) {

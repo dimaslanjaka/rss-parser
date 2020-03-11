@@ -29,7 +29,7 @@ class gtrans extends Curl
   public function getLogTxt()
   {
     $log = '';
-    $folder = ROOT . '/views/AGC';
+    $folder = _folder_(__DIR__ . '/log');
     if (is_dir($folder)) {
       foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($folder)) as $entry) {
         //var_dump($entry->getPathname());
@@ -685,7 +685,7 @@ class gtrans extends Curl
     if (isset($parse_url['host'])) {
       $upath = isset($parse_url['path']) ? str_replace('/', '', $parse_url['path']) : md5($url);
       $upath = preg_replace('/\.html$/m', '', $upath);
-      $dpath = $_SERVER['DOCUMENT_ROOT'] . "/views/AGC/saved/$niche/" . $parse_url['host'] . '/' . $upath . (isset($parse_url['query']) ? md5($parse_url['query']) : '') . '.src.' . $option['fileExt'];
+      $dpath = __DIR__ . "/saved/$niche/" . $parse_url['host'] . '/' . $upath . (isset($parse_url['query']) ? md5($parse_url['query']) : '') . '.src.' . $option['fileExt'];
       $_SESSION['article_source'] = $dpath;
       $crawl = true;
 
