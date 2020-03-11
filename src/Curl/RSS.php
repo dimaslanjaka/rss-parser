@@ -6,6 +6,7 @@ class RSS extends Curl
 {
   private $initrss;
   public $urlrss;
+  public $rss;
 
   public function __construct($base = null)
   {
@@ -21,6 +22,8 @@ class RSS extends Curl
 
   public function fetch_rss()
   {
-    $this->get($this->urlrss);
+    $this->initrss->get($this->urlrss);
+    $this->rss = $this->initrss->response;
+    return $this->rss;
   }
 }

@@ -6,7 +6,7 @@
     "keywords": [
         "php", "curl", "class", "api", "api-client", "client", "framework", "http", "http-client", "http-proxy", "json",
         "php-curl", "php-curl-library", "proxy", "requests", "restful", "web-scraper", "web-scraping", "web-service",
-        "xml"
+        "xml", "rss-parser"
     ],
     "authors": [
         {
