@@ -27,7 +27,7 @@
 
 */
 define('PDO_DEBUG', '3');
-class dimas_pdo extends dimas_google
+class dimas_pdo
 {
   public $sql;
 
@@ -123,14 +123,14 @@ class dimas_pdo extends dimas_google
 
       if (PDO_DEBUG == '3') {
         // Print details like script name and line.
-        $e .= $this->cj($e);
+        $e .= CJSON($e);
       }
     } else {
       $e .= 'SQL Error! Please contact the administrator.';
     }
 
     if (!headers_sent()) {
-      $this->dump(['error' => $e]);
+      ev(['error' => $e]);
     } else {
       echo "<pre>$e</pre>";
     }

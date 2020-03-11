@@ -193,10 +193,6 @@ $_SESSION["prxwork"] = $z["proxy"];
 <noscript>
 <meta http-equiv="refresh" content="0; url=/noscript.php" />
 </noscript>';
-    if (!function_exists("RPROXY")) {
-      include("engine.php");
-    }
-    RPROXY($url);
     //header("Refresh:0");
   }
 }
@@ -212,9 +208,6 @@ function pagepeeker($url)
   if (filesize($fileproxy)) {
     $dataline = $f_contents[array_rand($f_contents)];
     $proxy = $dataline;
-  } else {
-    $proxy = "176.9.106.58:80";
-    RPROXY($url);
   }
   $options["proxy"] = $proxy;
   $options["refer"] = $url;
@@ -606,6 +599,9 @@ function get_meta($url)
   $title = $nodes->item(0)->nodeValue; //titles
   $metas = $doc->getElementsByTagName('meta');
   for ($i = 0; $i < $metas->length; $i++) {
+    /**
+     * @var mixed $meta
+     */
     $meta = $metas->item($i);
     if (strtolower($meta->getAttribute('name')) == "author") {
       $author = $meta->getAttribute('content');

@@ -1,26 +1,20 @@
 <?php
 
 use Stichoza\GoogleTranslate\GoogleTranslate;
-use \RecursiveIteratorIterator;
 
 namespace Curl;
 
-/**
- * Google AGC init.
- *
- * @param curl_init $curl = curl_instance or null
- */
 class gtrans extends Curl
 {
-  private $curl;
+  public $gtrans_curl;
   public $string;
   private static $_instance = null;
   public $logtxt;
 
-  public function __construct($curl = null)
+  public function __construct($gtrans_curl = null)
   {
-    $this->curl = ($curl ? $curl : $this->cURL(false));
-    parent::__construct($curl);
+    $this->curl = ($gtrans_curl ? $gtrans_curl : $this->cURL(false));
+    parent::__construct($gtrans_curl);
   }
 
   public static function i()
@@ -210,13 +204,13 @@ class gtrans extends Curl
 
   public function translate($url, $hl = 'auto', $tl = 'en')
   {
-    $curl = $this->curl;
+    $gtrans_curl = $this->curl;
     $url = $this->build_url_2($url, $hl, $tl); //build_url
     if (isses('proxy') && preg_match('/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}):?([0-9]{1,6})?/m', isses('proxy'))) {
-      $curl->setProxy(trim(isses('proxy')));
-      $curl->setProxyTunnel(true);
+      $gtrans_curl->setProxy(trim(isses('proxy')));
+      $gtrans_curl->setProxyTunnel(true);
     }
-    $thetr = $curl->get($url);
+    $thetr = $gtrans_curl->get($url);
     $filter = $this->parsetry($thetr);
     if (isset($_REQUEST['method']) && 'loop' == $_REQUEST['method']) {
       for ($i = 0; $i < 5; ++$i) {
@@ -499,7 +493,7 @@ class gtrans extends Curl
 
   protected function parsetry($thetr)
   {
-    $curl = $this->curl;
+    $gtrans_curl = $this->curl;
     $dom = new \DOMDocument();
     libxml_use_internal_errors(true);
     if (!empty($thetr)) {
@@ -515,7 +509,7 @@ class gtrans extends Curl
         }
         $iFramesrc = $iFrame->getAttribute('src');
         if (preg_match('/googleusercontent|translate\.google\.com/m', $iFramesrc)) {
-          $thetr2 = $curl->get($iFramesrc);
+          $thetr2 = $gtrans_curl->get($iFramesrc);
           $filter = $thetr2;
         }
       }
@@ -532,7 +526,7 @@ class gtrans extends Curl
           //var_dump($parse, $Ahref);
           //$this->dump($A->getAttribute('href'));
           if (isset($parse['host']) && preg_match('/translate\.googleusercontent\.com|translate\.google\.com/m', $parse['host'])) {
-            $thetr2 = $curl->get($Ahref);
+            $thetr2 = $gtrans_curl->get($Ahref);
             //$this->dump($thetr2);
             $filter = $thetr2;
             break;
@@ -616,46 +610,46 @@ class gtrans extends Curl
 
   public function cURL($verbose = true)
   {
-    $curl = new Curl();
+    $gtrans_curl = new Curl();
     $headers = ['Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5', 'Connection: Keep-Alive', 'Cache-Control: max-age=0', 'Upgrade-Insecure-Requests: 1', 'DNT: 1', 'Keep-Alive: 300', 'Content-type: */*;charset=UTF-8', 'Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7', 'Accept-Language: en-us,en;q=0.5', 'Pragma: no-cache', 'Origins: https://translate.google.co.id'];
-    $curl->setHeaders($headers);
+    $gtrans_curl->setHeaders($headers);
     $useragent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : 'Opera/9.80 (J2ME/MIDP; Opera Mini/4.2.14912/870; U; id) Presto/2.4.15';
-    $curl->setUserAgent($useragent);
-    $curl->setReferrer('https://translate.google.co.id/m/translate');
-    $curl->setOpt(CURLOPT_ENCODING, 'gzip');
-    $curl->setOpt(CURLOPT_AUTOREFERER, true);
-    $curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
-    $curl->setOpt(CURLOPT_CAINFO, __DIR__ . '/cacert.pem');
-    $curl->setOpt(CURLOPT_COOKIESESSION, true);
-    $curl->setOpt(CURLOPT_RETURNTRANSFER, true);
-    $curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
+    $gtrans_curl->setUserAgent($useragent);
+    $gtrans_curl->setReferrer('https://translate.google.co.id/m/translate');
+    $gtrans_curl->setOpt(CURLOPT_ENCODING, 'gzip');
+    $gtrans_curl->setOpt(CURLOPT_AUTOREFERER, true);
+    $gtrans_curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
+    $gtrans_curl->setOpt(CURLOPT_CAINFO, __DIR__ . '/cacert.pem');
+    $gtrans_curl->setOpt(CURLOPT_COOKIESESSION, true);
+    $gtrans_curl->setOpt(CURLOPT_RETURNTRANSFER, true);
+    $gtrans_curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
     $cookie = __DIR__ . '/cookie.txt';
-    $curl->setCookieFile($cookie);
-    $curl->setCookieJar($cookie);
+    $gtrans_curl->setCookieFile($cookie);
+    $gtrans_curl->setCookieJar($cookie);
     if ($verbose) {
-      $curl->setOpt(CURLOPT_VERBOSE, true);
+      $gtrans_curl->setOpt(CURLOPT_VERBOSE, true);
     }
     if (isses('proxy') && !empty(isses('proxy'))) {
-      $curl->setProxy(trim(isses('proxy')));
-      $curl->setProxyTunnel(true);
+      $gtrans_curl->setProxy(trim(isses('proxy')));
+      $gtrans_curl->setProxyTunnel(true);
     }
 
-    return $curl;
+    return $gtrans_curl;
   }
 
   /**
    * Handle curl error.
    *
-   * @param Curl $curl
+   * @param Curl $gtrans_curl
    *
    * @return Curl
    */
-  public function curl_err($curl)
+  public function curl_err($gtrans_curl)
   {
-    if ($curl->error) {
-      echo 'Error (' . $curl->errorCode . '): ' . $curl->errorMessage . "\n";
+    if ($gtrans_curl->error) {
+      echo 'Error (' . $gtrans_curl->errorCode . '): ' . $gtrans_curl->errorMessage . "\n";
 
-      return $curl;
+      return $gtrans_curl;
       exit;
     }
   }
@@ -663,7 +657,7 @@ class gtrans extends Curl
   /**
    * fetch content based file time created.
    *
-   * @param Curl   $curl
+   * @param Curl   $gtrans_curl
    * @param url    $url
    * @param string $niche              folder name
    * @param array  $option
@@ -671,7 +665,7 @@ class gtrans extends Curl
    *
    * @return Curl
    */
-  public function fetch_contents($curl, $url, $niche = 'general', $option = ['filehour' => 24, 'fileExt' => 'html'])
+  public function fetch_contents($gtrans_curl, $url, $niche = 'general', $option = ['filehour' => 24, 'fileExt' => 'html'])
   {
     if (!is_string($niche)) {
       throw new \Exception('niche must be string instead of ' . gettype($niche));
@@ -705,47 +699,47 @@ class gtrans extends Curl
 
           switch ($ext) {
             case 'json':
-              $curl->response = json_decode($content);
+              $gtrans_curl->response = json_decode($content);
               break;
             default:
-              $curl->response = $content;
+              $gtrans_curl->response = $content;
               break;
           }
-          //var_dump($ext, $curl->response);
-          $curl->error = false;
+          //var_dump($ext, $gtrans_curl->response);
+          $gtrans_curl->error = false;
           $crawl = false;
         }
       }
       //$crawl = 1;
       if ($crawl) {
-        $curl->get($url);
-        if (!$curl->error) {
-          if (is_object($curl->response)) {
-            //$curl->response = $this->cj($curl->response);
+        $gtrans_curl->get($url);
+        if (!$gtrans_curl->error) {
+          if (is_object($gtrans_curl->response)) {
+            //$gtrans_curl->response = $this->cj($gtrans_curl->response);
           }
-          //var_dump($curl->responseHeaders['content-type']);
-          switch ($curl->responseHeaders['content-type']) {
+          //var_dump($gtrans_curl->responseHeaders['content-type']);
+          switch ($gtrans_curl->responseHeaders['content-type']) {
             case 'application/json':
-              _file_($dpath, $curl->response, true);
+              _file_($dpath, $gtrans_curl->response, true);
               break;
 
             case 'text/html':
-              _file_($dpath, htmlcom(getDatetimeNow()) . $curl->response, true);
+              _file_($dpath, htmlcom(getDatetimeNow()) . $gtrans_curl->response, true);
               break;
 
             default:
-              _file_($dpath, $curl->response, true);
+              _file_($dpath, $gtrans_curl->response, true);
               break;
           }
         } else {
-          return $this->curl_err($curl);
+          return $this->curl_err($gtrans_curl);
         }
       }
 
-      $curl->filename = $dpath;
+      $gtrans_curl->filename = $dpath;
 
-      if (is_string($curl->response)) {
-        $html = str_get_html($curl->response);
+      if (is_string($gtrans_curl->response)) {
+        $html = str_get_html($gtrans_curl->response);
         $T = $html && $html->find('title') ? preg_replace('/\s+/m', ' ', preg_replace('/\/|\\|\s+/m', ' ', html_entity_decode($html->find('title', 0)->plaintext))) : '';
         if (isset($_SESSION['title'])) {
           if ($_SESSION['title'] != $T) {
@@ -755,7 +749,7 @@ class gtrans extends Curl
         }
       }
 
-      return $curl;
+      return $gtrans_curl;
     } else {
       echo '<pre class="tx-danger">Host is undefined</pre>';
     }

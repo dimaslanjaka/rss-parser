@@ -27,7 +27,7 @@ class AGCURL
     $curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
     $curl->setOpt(CURLOPT_RETURNTRANSFER, true);
     $curl->setOpt(CURLOPT_FOLLOWLOCATION, true);
-    $cookie = __DIR__ . '/cookie.txt';
+    $cookie =  __DIR__ . '/cookie.txt';
     $curl->setCookieFile($cookie);
     $curl->setCookieJar($cookie);
     $this->curl = $curl;

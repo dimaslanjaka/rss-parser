@@ -3,7 +3,7 @@
 class Proxy
 {
   public $init;
-  public $result;
+  public $result = [];
   public $string;
   public $src;
   public $out;
@@ -17,10 +17,10 @@ class Proxy
   public function __construct()
   {
     if (!$this->src) {
-      $this->src = _file_(TEMP . '/src.txt');
+      $this->src = _file_(__DIR__ . '/src.txt');
     }
     if (!$this->out) {
-      $this->out = _file_(TEMP . '/work.txt');
+      $this->out = _file_(__DIR__ . '/work.txt');
     }
     $this->headers = [];
     $this->init = [];
@@ -69,7 +69,11 @@ class Proxy
       foreach ($this->init as $proxy) {
         $result = $this->curl($proxy['url']);
         if (preg_match_all($proxy['rgx'], $result, $match)) {
-          $this->result[] = $match[0];
+          $merge = array_merge($match[0], $this->result);
+          //var_dump(gettype($merge), $merge);
+          if (is_array($merge)) {
+            $this->result = array_merge($match[0], $this->result);
+          }
         }
       }
       if ($save) {
@@ -83,7 +87,7 @@ class Proxy
   public function save()
   {
     $A = isset($this->result[0]) && !empty($this->result[0]) ? $this->result[0] : $this->result;
-    if (!empty($A)) {
+    if (!empty($A) && is_array($A)) {
       $this->result = array_unique($A);
     }
     foreach ($this->result as $prx) {
@@ -93,6 +97,7 @@ class Proxy
       $this->string .= trim($prx) . "\n";
     }
     //$this->string .= implode("\n", $this->result);
+    //ev($this->out, $this->string);
     if ($this->out) {
       @file_put_contents($this->out, $this->string, FILE_APPEND);
     }
@@ -148,18 +153,25 @@ class Proxy
 
   public function curl($url, $type = 'GET')
   {
-    $curl = curl_init();
-    curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 0);
-    curl_setopt($curl, CURLOPT_TIMEOUT, 400); //timeout in second
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
-    if ('POST' == $type) {
-      curl_setopt($curl, CURLOPT_POST, 1);
-      curl_setopt($curl, CURLOPT_POSTFIELDS, $this->query);
+    $fc = _file_(__DIR__ . '/' . md5($url) . '.html');
+    $c = file_get_contents($fc);
+    if (time() - filemtime($fc) > 2 * 3600 || empty($c)) {
+      $curl = curl_init();
+      curl_setopt($curl, CURLOPT_URL, $url);
+      curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 0);
+      curl_setopt($curl, CURLOPT_TIMEOUT, 400); //timeout in second
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
+      if ('POST' == $type) {
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $this->query);
+      }
+
+      $c = curl_exec($curl);
+      _file_($fc, $c, true);
+      curl_close($curl);
     }
 
-    return curl_exec($curl);
-    curl_close($curl);
+    return $c;
   }
 }

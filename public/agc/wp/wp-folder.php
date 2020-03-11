@@ -59,11 +59,6 @@ function _folder_($d, $root = null, $noroot = null)
  */
 function _file_($path, $create = true, $force = false, $append = false)
 {
-  $path = smartFilePath($path);
-  if (strpos($path, '::1')) {
-    $rep = is_user_logged_in() ? get_current_user_id() : date('dmy') . '-' . md5($_SERVER['HTTP_USER_AGENT']);
-    $path = str_replace('::1', $rep, $path);
-  }
   if (false !== $create) {
     if (is_numeric($create) || ctype_digit($create)) {
       $create = (int) $create;

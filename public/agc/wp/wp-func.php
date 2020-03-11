@@ -1716,6 +1716,7 @@ function remove_specialchars($string, $replace_space_with = false, $replacer = [
 
   return $string;
 }
+
 function createAGCFile($path)
 {
   return createFilename(preg_replace('/\.html$/m', '', $path), function ($path_res) {

@@ -1,11 +1,16 @@
 <?php
 
-if (!isreq('q', 'post')) {
+require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/agc/autoload.php';
+
+use Curl\gtrans;
+
+if (!isreq('q')) {
   return;
 }
 $agc = new gtrans();
 $curl = $agc->cURL();
-$proxyF = __DIR__ . '/proxy.txt';
+$proxyF = _file_(__DIR__ . '/proxy.txt');
 $proxies = file($proxyF, FILE_SKIP_EMPTY_LINES);
 $proxies = array_map('trim', $proxies);
 $res = [];
@@ -44,7 +49,8 @@ if (!empty($proxies)) {
   $res['message'] = 'proxy_empty';
 }
 ksort($res);
-$core->dump($res);
+json::h();
+echo CJSON($res);
 
 function randP()
 {
